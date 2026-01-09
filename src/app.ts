@@ -1,4 +1,9 @@
+import { Server } from "./presentation/server";
 
-const myName: string = 'Armando';
+(async () => {
+  await main();
+})();
 
-console.log({ myName });
+function main(): void {
+  Server.start();
+}
