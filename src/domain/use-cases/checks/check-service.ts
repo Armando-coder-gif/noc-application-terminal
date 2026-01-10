@@ -4,27 +4,27 @@ interface CheckServiceUseCase{
 }
 
 
-export class CheckService implements CheckServiceUseCase{
+type SuccessCallBack = () => void;
+type ErrorCallBack = (error: string) => void;
 
-    async execute(url:string): Promise<boolean> {
+export class CheckService implements CheckServiceUseCase {
+  constructor(
+    private readonly SuccessCallBack: SuccessCallBack,
+    private readonly ErrorCallBack: ErrorCallBack
+  ) {}
 
-        try {
+  async execute(url: string): Promise<boolean> {
+    try {
+      const req = await fetch(url);
+      if (!req.ok) {
+        throw new Error(`Error on checking service ${url}`);
+      }
 
-            const req = await fetch(url);
-            if (!req.ok){
-                throw new Error(`Error on checking service ${url}`);
-            }
-            console.log(`${url} is ok`)
-            return true;
-        } catch (error) {
-
-            console.log(`${error}`)
-
-            return false;
-        }
-
-
-
-
+      this.SuccessCallBack();
+      return true;
+    } catch (error) {
+      this.ErrorCallBack(`${error}`);
+      return false;
     }
+  }
 }
