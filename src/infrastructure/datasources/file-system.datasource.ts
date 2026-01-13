@@ -6,44 +6,41 @@ import { LogEntity, LogSeverityLevel } from "../../domain/entities/log.entity";
 
 
 export class FileSystemDataSource implements LogDataSource {
+  private readonly logPath: string = "/logs";
+  private readonly lowLogPath: string = "/logs/logs-low.log";
+  private readonly mediumLogPath: string = "/logs/logs-medium.log";
+  private readonly highLogPath: string = "/logs/logs-high.log";
 
-    private readonly logPath: string = "/logs";
-    private readonly lowLogPath: string = "/logs/logs-low.log";
-    private readonly mediumLogPath: string = "/logs/logs-medium.log";
-    private readonly highLogPath: string = "/logs/logs-high.log";
+  constructor() {
+    this.createLogsFiles();
+  }
 
-
-    constructor() {
-        this.createLogsFiles();
+  private createLogsFiles = () => {
+    if (!fs.existsSync(this.logPath)) {
+      fs.mkdirSync(this.logPath);
     }
 
-    private createLogsFiles = () => {
-        if(!fs.existsSync(this.logPath)) {
-            fs.mkdirSync(this.logPath);
-        }
+    [this.lowLogPath, this.mediumLogPath, this.highLogPath].forEach((path) => {
+      if (fs.existsSync(path)) return;
+      fs.writeFileSync(path, ""); // archivo vacio
+    });
+  };
 
-        // se puede optimizar este codigo
-        // if(fs.existsSync(this.lowLogPath)) return;
-        // fs.writeFileSync(this.lowLogPath, '');
+  async saveLog(newLog: LogEntity): Promise<void> {
+    const logAsJSON: string = JSON.stringify(newLog);
 
-        [
-            this.lowLogPath,
-            this.mediumLogPath,
-            this.highLogPath
-        ].forEach( path => {
-            if (fs.existsSync(path)) return;
-            fs.writeFileSync(path, ''); // archivo vacio
-        });
+    fs.appendFileSync(this.lowLogPath, logAsJSON);
+
+    if (newLog.level === LogSeverityLevel.LOW) return;
+
+    if (newLog.level === LogSeverityLevel.MEDIUM) {
+      fs.appendFileSync(this.mediumLogPath, logAsJSON);
+    } else {
+      fs.appendFileSync(this.highLogPath, logAsJSON);
     }
+  }
 
-    saveLog(log: LogEntity): Promise<void> {
-        throw new Error("Method not implemented.");
-    }
-
-    getLogs(severityLevel: LogSeverityLevel): Promise<LogEntity[]> {
-        throw new Error("Method not implemented.");
-    }
-
-
-
+  getLogs(severityLevel: LogSeverityLevel): Promise<LogEntity[]> {
+    throw new Error("Method not implemented.");
+  }
 }
