@@ -11,7 +11,7 @@ export class Server {
   static start(): void {
     console.log("Server started...");
     CronService.createJob("*/5 * * * * *", () => {
-      const url: string = "http://localhost:3000";
+      const url: string = "https://www.google.com";
       new CheckService(
         fileSystemLogRepository,
         () => {
