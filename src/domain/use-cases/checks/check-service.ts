@@ -28,8 +28,8 @@ export class CheckService implements CheckServiceUseCase {
       this.SuccessCallBack();
       return true;
     } catch (error) {
-      const errorMessage = `${error}`;
-      const log = new LogEntity(errorMessage, LogSeverityLevel.LOW);
+      const errorMessage = `${url} is not ok. ${error}`;
+      const log = new LogEntity(errorMessage, LogSeverityLevel.HIGH);
       this.logRepository.saveLog(log);
 
       this.ErrorCallBack(errorMessage);
