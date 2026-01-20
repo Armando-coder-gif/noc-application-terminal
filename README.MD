@@ -2,7 +2,7 @@ this project use v23.11.0 node
 
 # dev
 1. clone env.template to .env
-2. settings environment variables
+2. setting environment variables
 
 ```
 PORT=3000
